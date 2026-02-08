@@ -34,7 +34,6 @@
     height: 100%;
     border-radius: 50%;
     border: 8px solid #fff;
-    transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
   }
 
   .pointer {
@@ -50,7 +49,7 @@
   }
 
   button {
-    margin: 15px 0;
+    margin: 10px;
     padding: 14px 40px;
     font-size: 20px;
     font-weight: bold;
@@ -62,14 +61,37 @@
   }
 
   .result {
-    font-size: 24px;
+    font-size: 22px;
     min-height: 30px;
-    text-align: center;
+    transition: all 0.3s ease;
   }
 
-  /* Death effect */
+  /* ===== RARITY GLOW ===== */
+  .common { color:#b0ffb0; text-shadow:0 0 8px rgba(176,255,176,.6); }
+  .rare { color:#b084ff; text-shadow:0 0 14px rgba(176,132,255,.9); }
+  .legendary {
+    color:gold;
+    text-shadow:0 0 12px gold,0 0 30px orange;
+    animation:pulse 1.2s infinite alternate;
+  }
+  .death-glow {
+    color:#ff4d4d;
+    text-shadow:0 0 15px red,0 0 35px darkred;
+    animation:breathe 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    from { text-shadow:0 0 12px gold; }
+    to { text-shadow:0 0 40px orange; }
+  }
+
+  @keyframes breathe {
+    0%,100%{opacity:.6}
+    50%{opacity:1}
+  }
+
   .death {
-    animation: shake 0.5s infinite;
+    animation: shake .5s infinite;
     background: darkred;
   }
 
@@ -81,7 +103,6 @@
     100% { transform: translate(0); }
   }
 
-  /* Money rain */
   .money {
     position: absolute;
     top: -50px;
@@ -89,29 +110,20 @@
     animation: fall linear forwards;
   }
 
-  @keyframes fall {
-    to { transform: translateY(110vh); }
+  @keyframes fall { to { transform: translateY(110vh); } }
+
+  .history,.leaderboard {
+    width:90%;
+    max-width:350px;
+    max-height:120px;
+    overflow-y:auto;
+    font-size:14px;
+    border-top:1px solid #444;
+    margin-top:5px;
+    padding-top:5px;
   }
 
-  /* History */
-  .history {
-    width: 90%;
-    max-width: 350px;
-    max-height: 120px;
-    overflow-y: auto;
-    font-size: 14px;
-    border-top: 1px solid #444;
-    margin-top: 10px;
-    padding-top: 5px;
-  }
-
-  /* Slider */
-  .slider {
-    width: 280px;
-    margin: 10px 0;
-    text-align: center;
-    font-size: 14px;
-  }
+  .slider { font-size:14px; margin-bottom:5px; }
 </style>
 </head>
 
@@ -126,80 +138,106 @@
 
 <div class="wheel-container">
   <div class="pointer"></div>
-
-  <svg class="wheel" viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="50" fill="#222" />
-  </svg>
+  <div class="wheel" id="wheel"></div>
 </div>
 
 <button onclick="spin()">SPIN</button>
+
 <div class="result" id="result"></div>
-
 <div class="history" id="history"></div>
+<div class="leaderboard" id="leaderboard"></div>
 
+<!-- Sounds -->
 <audio id="spinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-small-sweep-transition-166.wav"></audio>
+<audio id="tickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-mechanical-bling-210.wav"></audio>
 <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.wav"></audio>
 <audio id="deathSound" src="https://assets.mixkit.co/sfx/preview/mixkit-creepy-ambience-1910.wav"></audio>
 
 <script>
-  const baseOutcomes = [
-    "500k €", "1 Mio €", "10 Mio €",
-    "100 Mio €", "1 Bil €", "10 Bil €"
-  ];
+  const outcomes=["500k €","1 Mio €","10 Mio €","100 Mio €","1 Bil €","10 Bil €"];
+  const historyEl=document.getElementById("history");
+  const leaderboardEl=document.getElementById("leaderboard");
+  const resultEl=document.getElementById("result");
+  const slider=document.getElementById("deathSlider");
+  const deathValue=document.getElementById("deathValue");
+  const wheel=document.getElementById("wheel");
+  const tickSound=document.getElementById("tickSound");
 
-  const historyEl = document.getElementById("history");
-  const resultEl = document.getElementById("result");
-  const slider = document.getElementById("deathSlider");
-  const deathValue = document.getElementById("deathValue");
+  slider.oninput=()=>deathValue.textContent=slider.value;
+  let rotation=0;
 
-  slider.oninput = () => deathValue.textContent = slider.value;
+  function vibrate(p){navigator.vibrate&&navigator.vibrate(p)}
 
-  function vibrate(p) { navigator.vibrate && navigator.vibrate(p); }
+  function classify(outcome){
+    if(outcome.includes("Death")) return "death-glow";
+    if(outcome.includes("Bil")) return "legendary";
+    if(outcome.includes("100")) return "rare";
+    return "common";
+  }
 
-  function moneyRain() {
-    for (let i = 0; i < 20; i++) {
-      const m = document.createElement("div");
-      m.className = "money";
-      m.textContent = "💰";
-      m.style.left = Math.random() * 100 + "vw";
-      m.style.animationDuration = (Math.random() * 2 + 2) + "s";
+  function moneyRain(){
+    for(let i=0;i<20;i++){
+      const m=document.createElement("div");
+      m.className="money";
+      m.textContent="💰";
+      m.style.left=Math.random()*100+"vw";
+      m.style.animationDuration=(Math.random()*2+2)+"s";
       document.body.appendChild(m);
-      setTimeout(() => m.remove(), 4000);
+      setTimeout(()=>m.remove(),4000);
     }
   }
 
-  function spin() {
-    const spinSound = document.getElementById("spinSound");
-    const winSound = document.getElementById("winSound");
-    const deathSound = document.getElementById("deathSound");
+  function updateLeaderboard(outcome){
+    const data=JSON.parse(localStorage.getItem("leaderboard")||"{}");
+    data[outcome]=(data[outcome]||0)+1;
+    localStorage.setItem("leaderboard",JSON.stringify(data));
+    leaderboardEl.innerHTML="<b>Leaderboard</b><br>"+
+      Object.entries(data).sort((a,b)=>b[1]-a[1])
+      .map(([k,v])=>`${k}: ${v}`).join("<br>");
+  }
 
+  function spin(){
+    resultEl.className="result";
     document.body.classList.remove("death");
+    document.getElementById("spinSound").play();
+    vibrate([100,50,100]);
 
-    spinSound.currentTime = 0;
-    spinSound.play();
-    vibrate([100, 50, 100]);
+    // 🔔 Near-miss ticking slowdown
+    let ticks=0;
+    const tickInterval=setInterval(()=>{
+      tickSound.currentTime=0;
+      tickSound.play();
+      ticks++;
+      if(ticks>10) clearInterval(tickInterval);
+    },220 + ticks*35);
 
-    setTimeout(() => {
-      const deathChance = parseInt(slider.value);
-      const roll = Math.random() * 100;
+    rotation+=360*5+Math.random()*360;
+    wheel.style.transition="transform 5.8s cubic-bezier(.12,.82,.08,1)";
+    wheel.style.transform=`rotate(${rotation}deg)`;
 
+    setTimeout(()=>{
       let outcome;
-      if (roll < deathChance) {
-        outcome = "💀 Death";
-        deathSound.play();
+      if(Math.random()*100 < slider.value){
+        outcome="💀 Death";
         document.body.classList.add("death");
-        vibrate([300, 100, 300]);
+        document.getElementById("deathSound").play();
+        vibrate([300,100,300]);
       } else {
-        outcome = baseOutcomes[Math.floor(Math.random() * baseOutcomes.length)];
-        winSound.play();
+        outcome=outcomes[Math.floor(Math.random()*outcomes.length)];
+        document.getElementById("winSound").play();
         vibrate([150]);
-        if (outcome.includes("Bil") || outcome.includes("100")) moneyRain();
+        if(outcome.includes("Bil")||outcome.includes("100")) moneyRain();
       }
 
-      resultEl.textContent = "Result: " + outcome;
-      historyEl.innerHTML = `• ${outcome}<br>` + historyEl.innerHTML;
-    }, 4500);
+      const rarity=classify(outcome);
+      resultEl.textContent="Result: "+outcome;
+      resultEl.classList.add(rarity);
+      historyEl.innerHTML=`• ${outcome}<br>`+historyEl.innerHTML;
+      updateLeaderboard(outcome);
+    },5800);
   }
+
+  updateLeaderboard("—");
 </script>
 
 </body>
