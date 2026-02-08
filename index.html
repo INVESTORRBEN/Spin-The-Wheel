@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Spin the Wheel</title>
 
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    margin: 0;
     height: 100vh;
     background: #000;
     color: #fff;
@@ -20,13 +19,17 @@
     overflow: hidden;
   }
 
-  h1 { margin: 10px 0; }
+  h1 {
+    margin: 20px 0 8px 0;
+    font-size: 2.4rem;
+    text-align: center;
+  }
 
-  /* Mascot */
+  /* Mascot – top-right corner */
   .mascot {
     position: fixed;
-    top: 10px;
-    right: 10px;
+    top: 16px;
+    right: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,27 +37,28 @@
   }
 
   .mascot-img {
-    font-size: 48px;
-    animation: wave 1s infinite alternate;
+    font-size: 52px;
+    animation: wave 1.2s infinite alternate;
     transform-origin: 70% 70%;
   }
 
   @keyframes wave {
     0% { transform: rotate(0deg); }
-    50% { transform: rotate(20deg); }
-    100% { transform: rotate(-20deg); }
+    50% { transform: rotate(18deg); }
+    100% { transform: rotate(-18deg); }
   }
 
   .speech-bubble {
     background: #fff;
     color: #000;
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    max-width: 200px;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    max-width: 220px;
     text-align: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
 
   .speech-bubble::after {
@@ -68,12 +72,12 @@
     border-color: #fff transparent transparent transparent;
   }
 
-  /* Wheel */
+  /* Wheel – responsive size */
   .wheel-container {
     position: relative;
-    width: 380px;
-    height: 380px;
-    margin: 30px 0;
+    width: min(90vw, 380px);
+    height: min(90vw, 380px);
+    margin: 20px 0;
   }
 
   .wheel {
@@ -82,16 +86,17 @@
     border-radius: 50%;
     border: 10px solid #ddd;
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* Ensures labels don't disappear out */
     transition: transform 5.8s cubic-bezier(0.12, 0.82, 0.08, 1);
+    /* Seven explicit colors pegged to segments */
     background: conic-gradient(
-      #b0ffb0 0deg 51.4286deg,
-      #b084ff 51.4286deg 102.8571deg,
-      gold      102.8571deg 154.2857deg,
-      #ff4d4d   154.2857deg 205.7143deg,
-      #00ffff   205.7143deg 257.1429deg,
-      #ff00ff   257.1429deg 308.5714deg,
-      #555555   308.5714deg 360deg
+      #b0ffb0 0deg 51.4286deg,    /* Color 1: Light Green */
+      #b084ff 51.4286deg 102.8571deg, /* Color 2: Purple */
+      gold 102.8571deg 154.2857deg,   /* Color 3: Gold */
+      #ff4d4d 154.2857deg 205.7143deg, /* Color 4: Red */
+      #00ffff 205.7143deg 257.1429deg, /* Color 5: Cyan */
+      #ff00ff 257.1429deg 308.5714deg, /* Color 6: Magenta */
+      #555555 308.5714deg 360deg      /* Color 7: Gray */
     );
   }
 
@@ -112,13 +117,14 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
+    overflow: hidden; /* Extra clip to peg labels inside */
   }
 
   .labels div {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform-origin: center 140px;   /* distance from center — adjust if needed */
+    transform-origin: center 140px; /* Peg distance – adjustable */
     font-weight: bold;
     font-size: 15px;
     color: #000;
@@ -126,10 +132,13 @@
     white-space: nowrap;
     text-align: center;
     width: 140px;
-    margin-left: -70px;               /* center the label horizontally */
+    margin-left: -70px;
+    /* Clip to prevent disappearance */
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* Position each label by rotation */
+  /* Rotations to peg figures to segment centers */
   .labels div:nth-child(1) { transform: translate(-50%, -50%) rotate(25.714deg); }
   .labels div:nth-child(2) { transform: translate(-50%, -50%) rotate(77.143deg); }
   .labels div:nth-child(3) { transform: translate(-50%, -50%) rotate(128.571deg); }
@@ -140,7 +149,7 @@
 
   button {
     margin: 12px;
-    padding: 14px 50px;
+    padding: 14px 60px;
     font-size: 20px;
     font-weight: bold;
     border: none;
@@ -153,7 +162,8 @@
   .result {
     font-size: 24px;
     min-height: 36px;
-    margin: 10px 0;
+    margin: 12px 0;
+    text-align: center;
   }
 
   .common    { color:#b0ffb0; text-shadow:0 0 10px #b0ffb0; }
@@ -185,7 +195,7 @@
 
   .history, .leaderboard {
     width: 90%;
-    max-width: 360px;
+    max-width: min(90vw, 360px);
     max-height: 140px;
     overflow-y: auto;
     font-size: 15px;
@@ -194,14 +204,34 @@
     padding-top: 8px;
   }
 
-  .slider { margin: 10px 0; font-size: 15px; }
+  .slider { margin: 12px 0; font-size: 15px; text-align: center; width: min(90vw, 360px); }
+
+  /* Responsive for Android/iOS/small screens */
+  @media (max-width: 420px), (max-height: 780px) {
+    h1 { font-size: 2rem; margin-top: 10px; }
+    .wheel-container { width: 90vw; height: 90vw; margin: 10px 0; }
+    .labels div { font-size: 13px; transform-origin: center calc(45vw - 10px); width: 120px; margin-left: -60px; }
+    .pointer { top: -20px; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 24px solid red; }
+    button { padding: 12px 50px; font-size: 18px; }
+    .result { font-size: 20px; }
+    .history, .leaderboard { font-size: 14px; max-height: 120px; }
+    .mascot { top: 8px; right: 8px; }
+    .mascot-img { font-size: 44px; }
+    .speech-bubble { font-size: 12px; max-width: 180px; }
+  }
+
+  @media (orientation: landscape) and (max-height: 500px) {
+    body { justify-content: flex-start; padding-top: 10px; }
+    .wheel-container { width: min(50vh, 380px); height: min(50vh, 380px); }
+    .labels div { transform-origin: center calc(25vh - 20px); }
+  }
 </style>
 </head>
 <body>
 
 <div class="mascot">
   <div class="speech-bubble">
-    Spin it! Maybe you'll get rich... or maybe not 😈
+    Spin it! Will you get rich… or not? 😈
   </div>
   <div class="mascot-img">👩‍🎤</div>
 </div>
@@ -298,7 +328,6 @@ function spin() {
     if (ticks > 12) clearInterval(tickInterval);
   }, 220);
 
-  // Decide outcome
   let outcome;
   if (Math.random() * 100 < slider.value) {
     outcome = "💀 Death";
@@ -306,14 +335,13 @@ function spin() {
     outcome = outcomes[Math.floor(Math.random() * 6)];
   }
 
-  // Calculate rotation — lands in the middle of the segment
   const sliceDeg = 360 / 7;
   const index = outcomes.indexOf(outcome);
   const midSegment = index * sliceDeg + sliceDeg / 2;
-  const spins = 5 + Math.random() * 2;           // 5–7 full spins
-  const targetRotation = 360 * spins + 90 - midSegment; // 90° offset because pointer is at top
+  const spins = 5 + Math.random() * 2;
+  const targetRotation = 360 * spins + 90 - midSegment;
 
-  rotation += targetRotation - (rotation % 360); // normalize
+  rotation += targetRotation - (rotation % 360);
 
   wheel.style.transform = `rotate(${rotation}deg)`;
 
