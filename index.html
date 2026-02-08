@@ -7,7 +7,6 @@
 
 <style>
   * { box-sizing: border-box; }
-
   body {
     margin: 0;
     height: 100vh;
@@ -53,7 +52,7 @@
     font-size: 14px;
     padding: 8px 12px;
     border-radius: 10px;
-    max-width: 180px;
+    max-width: 200px;
     text-align: center;
     margin-bottom: 6px;
     position: relative;
@@ -73,8 +72,8 @@
   /* ===== Wheel ===== */
   .wheel-container {
     position: relative;
-    width: 320px;
-    height: 320px;
+    width: 360px;
+    height: 360px;
     margin-top: 40px;
   }
 
@@ -83,14 +82,6 @@
     height: 100%;
     border-radius: 50%;
     border: 8px solid #fff;
-    background: conic-gradient(
-      #b0ffb0 0deg 60deg,
-      #b084ff 60deg 120deg,
-      gold 120deg 180deg,
-      #ff4d4d 180deg 240deg,
-      #b0ffb0 240deg 300deg,
-      #b084ff 300deg 360deg
-    );
     position: relative;
     overflow: hidden;
     transition: transform 5.8s cubic-bezier(.12,.82,.08,1);
@@ -104,21 +95,37 @@
     align-items: center;
     pointer-events: none;
   }
+
   .wheel .labels div {
     position: absolute;
-    width: 120px;
+    width: 140px;
     text-align: center;
     font-weight: bold;
     font-size: 14px;
     color: #000;
-    transform-origin: 50% 160px;
+    transform-origin: 50% 180px; /* push labels inside wheel */
   }
+
   .wheel .labels div:nth-child(1) { transform: rotate(0deg); }
-  .wheel .labels div:nth-child(2) { transform: rotate(60deg); }
-  .wheel .labels div:nth-child(3) { transform: rotate(120deg); }
-  .wheel .labels div:nth-child(4) { transform: rotate(180deg); }
-  .wheel .labels div:nth-child(5) { transform: rotate(240deg); }
-  .wheel .labels div:nth-child(6) { transform: rotate(300deg); }
+  .wheel .labels div:nth-child(2) { transform: rotate(51.43deg); }
+  .wheel .labels div:nth-child(3) { transform: rotate(102.86deg); }
+  .wheel .labels div:nth-child(4) { transform: rotate(154.29deg); }
+  .wheel .labels div:nth-child(5) { transform: rotate(205.72deg); }
+  .wheel .labels div:nth-child(6) { transform: rotate(257.15deg); }
+  .wheel .labels div:nth-child(7) { transform: rotate(308.58deg); }
+
+  /* 7 distinct colors using conic-gradient */
+  .wheel {
+    background: conic-gradient(
+      #b0ffb0 0deg 51.43deg,
+      #b084ff 51.43deg 102.86deg,
+      gold 102.86deg 154.29deg,
+      #ff4d4d 154.29deg 205.72deg,
+      #00ffff 205.72deg 257.15deg,
+      #ff00ff 257.15deg 308.58deg,
+      #555555 308.58deg 360deg
+    );
+  }
 
   .pointer {
     position: absolute;
@@ -219,6 +226,7 @@
       <div>100 Mio €</div>
       <div>1 Bil €</div>
       <div>10 Bil €</div>
+      <div>💀 Death</div>
     </div>
   </div>
 </div>
@@ -236,7 +244,7 @@
 <audio id="deathSound" src="https://assets.mixkit.co/sfx/preview/mixkit-creepy-ambience-1910.wav"></audio>
 
 <script>
-  const outcomes=["500k €","1 Mio €","10 Mio €","100 Mio €","1 Bil €","10 Bil €"];
+  const outcomes=["500k €","1 Mio €","10 Mio €","100 Mio €","1 Bil €","10 Bil €","💀 Death"];
   const historyEl=document.getElementById("history");
   const leaderboardEl=document.getElementById("leaderboard");
   const resultEl=document.getElementById("result");
@@ -292,17 +300,19 @@
       if(ticks>10) clearInterval(tickInterval);
     },220 + ticks*35);
 
+    // Decide outcome respecting death probability slider
     let outcome;
     if(Math.random()*100 < slider.value){
       outcome="💀 Death";
     } else {
-      outcome = outcomes[Math.floor(Math.random()*outcomes.length)];
+      outcome = outcomes[Math.floor(Math.random()*6)]; // first 6 non-death
     }
 
-    const index = outcomes.indexOf(outcome.replace("💀 ","")) !== -1 ? outcomes.indexOf(outcome) : -1;
-    const sliceDeg = 360 / outcomes.length;
+    // Calculate wheel rotation for correct pointer
+    const index = outcomes.indexOf(outcome);
+    const sliceDeg = 360 / outcomes.length; // 360 / 7 = ~51.43
     const randomOffset = Math.random() * sliceDeg * 0.8;
-    const targetRotation = index >= 0 ? (360 * 5 + 270 - index*sliceDeg - randomOffset) : (360*5 + Math.random()*360);
+    const targetRotation = 360*5 + 270 - index*sliceDeg - randomOffset;
     rotation += targetRotation;
 
     wheel.style.transition="transform 5.8s cubic-bezier(.12,.82,.08,1)";
