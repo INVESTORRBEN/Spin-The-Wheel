@@ -34,7 +34,43 @@
     height: 100%;
     border-radius: 50%;
     border: 8px solid #fff;
+    background: conic-gradient(
+      #b0ffb0 0deg 60deg,
+      #b084ff 60deg 120deg,
+      gold 120deg 180deg,
+      #ff4d4d 180deg 240deg,
+      #b0ffb0 240deg 300deg,
+      #b084ff 300deg 360deg
+    );
+    position: relative;
+    overflow: hidden;
+    transition: transform 5.8s cubic-bezier(.12,.82,.08,1);
   }
+
+  /* Labels on wheel */
+  .wheel .labels {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+  }
+  .wheel .labels div {
+    position: absolute;
+    width: 120px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: #000;
+    transform-origin: 50% 160px; /* push labels outward */
+  }
+  .wheel .labels div:nth-child(1) { transform: rotate(0deg); }
+  .wheel .labels div:nth-child(2) { transform: rotate(60deg); }
+  .wheel .labels div:nth-child(3) { transform: rotate(120deg); }
+  .wheel .labels div:nth-child(4) { transform: rotate(180deg); }
+  .wheel .labels div:nth-child(5) { transform: rotate(240deg); }
+  .wheel .labels div:nth-child(6) { transform: rotate(300deg); }
 
   .pointer {
     position: absolute;
@@ -46,6 +82,7 @@
     border-left: 14px solid transparent;
     border-right: 14px solid transparent;
     border-bottom: 24px solid red;
+    z-index: 2;
   }
 
   button {
@@ -66,35 +103,15 @@
     transition: all 0.3s ease;
   }
 
-  /* ===== RARITY GLOW ===== */
   .common { color:#b0ffb0; text-shadow:0 0 8px rgba(176,255,176,.6); }
   .rare { color:#b084ff; text-shadow:0 0 14px rgba(176,132,255,.9); }
-  .legendary {
-    color:gold;
-    text-shadow:0 0 12px gold,0 0 30px orange;
-    animation:pulse 1.2s infinite alternate;
-  }
-  .death-glow {
-    color:#ff4d4d;
-    text-shadow:0 0 15px red,0 0 35px darkred;
-    animation:breathe 1.5s infinite;
-  }
+  .legendary { color:gold; text-shadow:0 0 12px gold,0 0 30px orange; animation:pulse 1.2s infinite alternate; }
+  .death-glow { color:#ff4d4d; text-shadow:0 0 15px red,0 0 35px darkred; animation:breathe 1.5s infinite; }
 
-  @keyframes pulse {
-    from { text-shadow:0 0 12px gold; }
-    to { text-shadow:0 0 40px orange; }
-  }
+  @keyframes pulse { from { text-shadow:0 0 12px gold; } to { text-shadow:0 0 40px orange; } }
+  @keyframes breathe { 0%,100%{opacity:.6} 50%{opacity:1} }
 
-  @keyframes breathe {
-    0%,100%{opacity:.6}
-    50%{opacity:1}
-  }
-
-  .death {
-    animation: shake .5s infinite;
-    background: darkred;
-  }
-
+  .death { animation: shake .5s infinite; background: darkred; }
   @keyframes shake {
     0% { transform: translate(0); }
     25% { transform: translate(-5px, 5px); }
@@ -109,7 +126,6 @@
     font-size: 24px;
     animation: fall linear forwards;
   }
-
   @keyframes fall { to { transform: translateY(110vh); } }
 
   .history,.leaderboard {
@@ -138,7 +154,16 @@
 
 <div class="wheel-container">
   <div class="pointer"></div>
-  <div class="wheel" id="wheel"></div>
+  <div class="wheel" id="wheel">
+    <div class="labels">
+      <div>500k €</div>
+      <div>1 Mio €</div>
+      <div>10 Mio €</div>
+      <div>100 Mio €</div>
+      <div>1 Bil €</div>
+      <div>10 Bil €</div>
+    </div>
+  </div>
 </div>
 
 <button onclick="spin()">SPIN</button>
@@ -147,7 +172,6 @@
 <div class="history" id="history"></div>
 <div class="leaderboard" id="leaderboard"></div>
 
-<!-- Sounds -->
 <audio id="spinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-small-sweep-transition-166.wav"></audio>
 <audio id="tickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-mechanical-bling-210.wav"></audio>
 <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.wav"></audio>
@@ -163,10 +187,10 @@
   const wheel=document.getElementById("wheel");
   const tickSound=document.getElementById("tickSound");
 
-  slider.oninput=()=>deathValue.textContent=slider.value;
-  let rotation=0;
+  slider.oninput = ()=> deathValue.textContent = slider.value;
+  let rotation = 0;
 
-  function vibrate(p){navigator.vibrate&&navigator.vibrate(p)}
+  function vibrate(p){navigator.vibrate && navigator.vibrate(p)}
 
   function classify(outcome){
     if(outcome.includes("Death")) return "death-glow";
@@ -202,7 +226,7 @@
     document.getElementById("spinSound").play();
     vibrate([100,50,100]);
 
-    // 🔔 Near-miss ticking slowdown
+    // Slow ticking sound
     let ticks=0;
     const tickInterval=setInterval(()=>{
       tickSound.currentTime=0;
@@ -211,25 +235,36 @@
       if(ticks>10) clearInterval(tickInterval);
     },220 + ticks*35);
 
-    rotation+=360*5+Math.random()*360;
+    // Pick outcome first to spin realistically
+    let outcome;
+    if(Math.random()*100 < slider.value){
+      outcome="💀 Death";
+    } else {
+      outcome = outcomes[Math.floor(Math.random()*outcomes.length)];
+    }
+
+    // Determine wheel angle to land on selected outcome
+    const index = outcomes.indexOf(outcome.replace("💀 ","")) !== -1 ? outcomes.indexOf(outcome) : -1;
+    const sliceDeg = 360 / outcomes.length;
+    const randomOffset = Math.random() * sliceDeg * 0.8; // random offset in slice
+    const targetRotation = index >= 0 ? (360 * 5 + 270 - index*sliceDeg - randomOffset) : (360*5 + Math.random()*360);
+    rotation += targetRotation;
+
     wheel.style.transition="transform 5.8s cubic-bezier(.12,.82,.08,1)";
     wheel.style.transform=`rotate(${rotation}deg)`;
 
     setTimeout(()=>{
-      let outcome;
-      if(Math.random()*100 < slider.value){
-        outcome="💀 Death";
+      if(outcome.includes("Death")){
         document.body.classList.add("death");
         document.getElementById("deathSound").play();
         vibrate([300,100,300]);
       } else {
-        outcome=outcomes[Math.floor(Math.random()*outcomes.length)];
         document.getElementById("winSound").play();
         vibrate([150]);
         if(outcome.includes("Bil")||outcome.includes("100")) moneyRain();
       }
 
-      const rarity=classify(outcome);
+      const rarity = classify(outcome);
       resultEl.textContent="Result: "+outcome;
       resultEl.classList.add(rarity);
       historyEl.innerHTML=`• ${outcome}<br>`+historyEl.innerHTML;
@@ -239,6 +274,5 @@
 
   updateLeaderboard("—");
 </script>
-
 </body>
 </html>
