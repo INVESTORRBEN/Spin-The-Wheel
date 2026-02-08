@@ -22,7 +22,7 @@
 
   h1 { margin: 10px 0; }
 
-  /* ===== Mascot ===== */
+  /* Mascot */
   .mascot {
     position: fixed;
     top: 10px;
@@ -37,7 +37,6 @@
     font-size: 48px;
     animation: wave 1s infinite alternate;
     transform-origin: 70% 70%;
-    cursor: default;
   }
 
   @keyframes wave {
@@ -69,142 +68,140 @@
     border-color: #fff transparent transparent transparent;
   }
 
-  /* ===== Wheel ===== */
+  /* Wheel */
   .wheel-container {
     position: relative;
-    width: 360px;
-    height: 360px;
-    margin-top: 40px;
+    width: 380px;
+    height: 380px;
+    margin: 30px 0;
   }
 
   .wheel {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 8px solid #fff;
+    border: 10px solid #ddd;
     position: relative;
     overflow: hidden;
-    transition: transform 5.8s cubic-bezier(.12,.82,.08,1);
-  }
-
-  .wheel .labels {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: none;
-  }
-
-  .wheel .labels div {
-    position: absolute;
-    width: 140px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 14px;
-    color: #000;
-    transform-origin: 50% 180px; /* push labels inside wheel */
-  }
-
-  .wheel .labels div:nth-child(1) { transform: rotate(0deg); }
-  .wheel .labels div:nth-child(2) { transform: rotate(51.43deg); }
-  .wheel .labels div:nth-child(3) { transform: rotate(102.86deg); }
-  .wheel .labels div:nth-child(4) { transform: rotate(154.29deg); }
-  .wheel .labels div:nth-child(5) { transform: rotate(205.72deg); }
-  .wheel .labels div:nth-child(6) { transform: rotate(257.15deg); }
-  .wheel .labels div:nth-child(7) { transform: rotate(308.58deg); }
-
-  /* 7 distinct colors using conic-gradient */
-  .wheel {
+    transition: transform 5.8s cubic-bezier(0.12, 0.82, 0.08, 1);
     background: conic-gradient(
-      #b0ffb0 0deg 51.43deg,
-      #b084ff 51.43deg 102.86deg,
-      gold 102.86deg 154.29deg,
-      #ff4d4d 154.29deg 205.72deg,
-      #00ffff 205.72deg 257.15deg,
-      #ff00ff 257.15deg 308.58deg,
-      #555555 308.58deg 360deg
+      #b0ffb0 0deg 51.4286deg,
+      #b084ff 51.4286deg 102.8571deg,
+      gold      102.8571deg 154.2857deg,
+      #ff4d4d   154.2857deg 205.7143deg,
+      #00ffff   205.7143deg 257.1429deg,
+      #ff00ff   257.1429deg 308.5714deg,
+      #555555   308.5714deg 360deg
     );
   }
 
   .pointer {
     position: absolute;
-    top: -18px;
+    top: -24px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 14px solid transparent;
-    border-right: 14px solid transparent;
-    border-bottom: 24px solid red;
-    z-index: 2;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-bottom: 32px solid red;
+    z-index: 5;
   }
 
+  .labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .labels div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: center 140px;   /* distance from center — adjust if needed */
+    font-weight: bold;
+    font-size: 15px;
+    color: #000;
+    text-shadow: 0 0 3px rgba(255,255,255,0.9);
+    white-space: nowrap;
+    text-align: center;
+    width: 140px;
+    margin-left: -70px;               /* center the label horizontally */
+  }
+
+  /* Position each label by rotation */
+  .labels div:nth-child(1) { transform: translate(-50%, -50%) rotate(25.714deg); }
+  .labels div:nth-child(2) { transform: translate(-50%, -50%) rotate(77.143deg); }
+  .labels div:nth-child(3) { transform: translate(-50%, -50%) rotate(128.571deg); }
+  .labels div:nth-child(4) { transform: translate(-50%, -50%) rotate(180deg);     }
+  .labels div:nth-child(5) { transform: translate(-50%, -50%) rotate(231.429deg); }
+  .labels div:nth-child(6) { transform: translate(-50%, -50%) rotate(282.857deg); }
+  .labels div:nth-child(7) { transform: translate(-50%, -50%) rotate(334.286deg); }
+
   button {
-    margin: 10px;
-    padding: 14px 40px;
+    margin: 12px;
+    padding: 14px 50px;
     font-size: 20px;
     font-weight: bold;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #ff004f;
-    color: #fff;
+    color: white;
     cursor: pointer;
   }
 
   .result {
-    font-size: 22px;
-    min-height: 30px;
-    transition: all 0.3s ease;
+    font-size: 24px;
+    min-height: 36px;
+    margin: 10px 0;
   }
 
-  .common { color:#b0ffb0; text-shadow:0 0 8px rgba(176,255,176,.6); }
-  .rare { color:#b084ff; text-shadow:0 0 14px rgba(176,132,255,.9); }
-  .legendary { color:gold; text-shadow:0 0 12px gold,0 0 30px orange; animation:pulse 1.2s infinite alternate; }
-  .death-glow { color:#ff4d4d; text-shadow:0 0 15px red,0 0 35px darkred; animation:breathe 1.5s infinite; }
+  .common    { color:#b0ffb0; text-shadow:0 0 10px #b0ffb0; }
+  .rare      { color:#b084ff; text-shadow:0 0 14px #b084ff; }
+  .legendary { color:gold;    text-shadow:0 0 16px gold, 0 0 32px orange; animation: pulse 1.4s infinite alternate; }
+  .death-glow{ color:#ff4d4d; text-shadow:0 0 20px red, 0 0 40px darkred; animation: breathe 1.6s infinite; }
 
-  @keyframes pulse { from { text-shadow:0 0 12px gold; } to { text-shadow:0 0 40px orange; } }
-  @keyframes breathe { 0%,100%{opacity:.6} 50%{opacity:1} }
+  @keyframes pulse  { from {text-shadow:0 0 16px gold}     to {text-shadow:0 0 40px orange} }
+  @keyframes breathe{ 0%,100%{opacity:0.7} 50%{opacity:1} }
 
-  .death { animation: shake .5s infinite; background: darkred; }
+  .death { animation: shake 0.5s infinite; background: #8b0000; }
+
   @keyframes shake {
-    0% { transform: translate(0); }
-    25% { transform: translate(-5px, 5px); }
-    50% { transform: translate(5px, -5px); }
-    75% { transform: translate(-5px, -5px); }
-    100% { transform: translate(0); }
+    0%,100% { transform: translate(0); }
+    25%  { transform: translate(-6px, 4px); }
+    50%  { transform: translate(6px, -4px); }
+    75%  { transform: translate(-4px, -6px); }
   }
 
   .money {
     position: absolute;
-    top: -50px;
-    font-size: 24px;
+    top: -60px;
+    font-size: 28px;
     animation: fall linear forwards;
-  }
-  @keyframes fall { to { transform: translateY(110vh); } }
-
-  .history,.leaderboard {
-    width:90%;
-    max-width:350px;
-    max-height:120px;
-    overflow-y:auto;
-    font-size:14px;
-    border-top:1px solid #444;
-    margin-top:5px;
-    padding-top:5px;
+    pointer-events: none;
   }
 
-  .slider { font-size:14px; margin-bottom:5px; }
+  @keyframes fall { to { transform: translateY(120vh); } }
 
+  .history, .leaderboard {
+    width: 90%;
+    max-width: 360px;
+    max-height: 140px;
+    overflow-y: auto;
+    font-size: 15px;
+    border-top: 1px solid #444;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .slider { margin: 10px 0; font-size: 15px; }
 </style>
 </head>
-
 <body>
 
-<!-- Mascot with speech bubble -->
 <div class="mascot">
   <div class="speech-bubble">
-    Hey there! Ready to test your luck? Spin the wheel and let luck decide your fate!
+    Spin it! Maybe you'll get rich... or maybe not 😈
   </div>
   <div class="mascot-img">👩‍🎤</div>
 </div>
@@ -244,100 +241,102 @@
 <audio id="deathSound" src="https://assets.mixkit.co/sfx/preview/mixkit-creepy-ambience-1910.wav"></audio>
 
 <script>
-  const outcomes=["500k €","1 Mio €","10 Mio €","100 Mio €","1 Bil €","10 Bil €","💀 Death"];
-  const historyEl=document.getElementById("history");
-  const leaderboardEl=document.getElementById("leaderboard");
-  const resultEl=document.getElementById("result");
-  const slider=document.getElementById("deathSlider");
-  const deathValue=document.getElementById("deathValue");
-  const wheel=document.getElementById("wheel");
-  const tickSound=document.getElementById("tickSound");
+const outcomes = ["500k €", "1 Mio €", "10 Mio €", "100 Mio €", "1 Bil €", "10 Bil €", "💀 Death"];
+const historyEl    = document.getElementById("history");
+const leaderboardEl = document.getElementById("leaderboard");
+const resultEl     = document.getElementById("result");
+const slider       = document.getElementById("deathSlider");
+const deathValue   = document.getElementById("deathValue");
+const wheel        = document.getElementById("wheel");
+const tickSound    = document.getElementById("tickSound");
 
-  slider.oninput = ()=> deathValue.textContent = slider.value;
-  let rotation = 0;
+slider.oninput = () => deathValue.textContent = slider.value;
 
-  function vibrate(p){navigator.vibrate && navigator.vibrate(p)}
+let rotation = 0;
 
-  function classify(outcome){
-    if(outcome.includes("Death")) return "death-glow";
-    if(outcome.includes("Bil")) return "legendary";
-    if(outcome.includes("100")) return "rare";
-    return "common";
+function vibrate(p) { navigator.vibrate?.(p); }
+
+function classify(outcome) {
+  if (outcome.includes("Death")) return "death-glow";
+  if (outcome.includes("Bil"))   return "legendary";
+  if (outcome.includes("100"))   return "rare";
+  return "common";
+}
+
+function moneyRain() {
+  for (let i = 0; i < 24; i++) {
+    const m = document.createElement("div");
+    m.className = "money";
+    m.textContent = "💰";
+    m.style.left = Math.random() * 100 + "vw";
+    m.style.animationDuration = (Math.random() * 2 + 2.5) + "s";
+    document.body.appendChild(m);
+    setTimeout(() => m.remove(), 5000);
+  }
+}
+
+function updateLeaderboard(outcome) {
+  const data = JSON.parse(localStorage.getItem("leaderboard") || "{}");
+  data[outcome] = (data[outcome] || 0) + 1;
+  localStorage.setItem("leaderboard", JSON.stringify(data));
+  leaderboardEl.innerHTML = "<b>Leaderboard</b><br>" +
+    Object.entries(data).sort((a,b)=>b[1]-a[1])
+      .map(([k,v]) => `${k}: ${v}`).join("<br>");
+}
+
+function spin() {
+  resultEl.className = "result";
+  document.body.classList.remove("death");
+  document.getElementById("spinSound").play();
+  vibrate([100,50,100]);
+
+  let ticks = 0;
+  const tickInterval = setInterval(() => {
+    tickSound.currentTime = 0;
+    tickSound.play();
+    ticks++;
+    if (ticks > 12) clearInterval(tickInterval);
+  }, 220);
+
+  // Decide outcome
+  let outcome;
+  if (Math.random() * 100 < slider.value) {
+    outcome = "💀 Death";
+  } else {
+    outcome = outcomes[Math.floor(Math.random() * 6)];
   }
 
-  function moneyRain(){
-    for(let i=0;i<20;i++){
-      const m=document.createElement("div");
-      m.className="money";
-      m.textContent="💰";
-      m.style.left=Math.random()*100+"vw";
-      m.style.animationDuration=(Math.random()*2+2)+"s";
-      document.body.appendChild(m);
-      setTimeout(()=>m.remove(),4000);
-    }
-  }
+  // Calculate rotation — lands in the middle of the segment
+  const sliceDeg = 360 / 7;
+  const index = outcomes.indexOf(outcome);
+  const midSegment = index * sliceDeg + sliceDeg / 2;
+  const spins = 5 + Math.random() * 2;           // 5–7 full spins
+  const targetRotation = 360 * spins + 90 - midSegment; // 90° offset because pointer is at top
 
-  function updateLeaderboard(outcome){
-    const data=JSON.parse(localStorage.getItem("leaderboard")||"{}");
-    data[outcome]=(data[outcome]||0)+1;
-    localStorage.setItem("leaderboard",JSON.stringify(data));
-    leaderboardEl.innerHTML="<b>Leaderboard</b><br>"+
-      Object.entries(data).sort((a,b)=>b[1]-a[1])
-      .map(([k,v])=>`${k}: ${v}`).join("<br>");
-  }
+  rotation += targetRotation - (rotation % 360); // normalize
 
-  function spin(){
-    resultEl.className="result";
-    document.body.classList.remove("death");
-    document.getElementById("spinSound").play();
-    vibrate([100,50,100]);
+  wheel.style.transform = `rotate(${rotation}deg)`;
 
-    let ticks=0;
-    const tickInterval=setInterval(()=>{
-      tickSound.currentTime=0;
-      tickSound.play();
-      ticks++;
-      if(ticks>10) clearInterval(tickInterval);
-    },220 + ticks*35);
-
-    // Decide outcome respecting death probability slider
-    let outcome;
-    if(Math.random()*100 < slider.value){
-      outcome="💀 Death";
+  setTimeout(() => {
+    if (outcome.includes("Death")) {
+      document.body.classList.add("death");
+      document.getElementById("deathSound").play();
+      vibrate([300,100,300,100,300]);
     } else {
-      outcome = outcomes[Math.floor(Math.random()*6)]; // first 6 non-death
+      document.getElementById("winSound").play();
+      vibrate([120,60,120]);
+      if (outcome.includes("Bil") || outcome.includes("100")) moneyRain();
     }
 
-    // Calculate wheel rotation for correct pointer
-    const index = outcomes.indexOf(outcome);
-    const sliceDeg = 360 / outcomes.length; // 360 / 7 = ~51.43
-    const randomOffset = Math.random() * sliceDeg * 0.8;
-    const targetRotation = 360*5 + 270 - index*sliceDeg - randomOffset;
-    rotation += targetRotation;
+    const rarity = classify(outcome);
+    resultEl.textContent = "Result: " + outcome;
+    resultEl.classList.add(rarity);
+    historyEl.innerHTML = `• ${outcome}<br>` + historyEl.innerHTML.slice(0, 800);
+    updateLeaderboard(outcome);
+  }, 5800);
+}
 
-    wheel.style.transition="transform 5.8s cubic-bezier(.12,.82,.08,1)";
-    wheel.style.transform=`rotate(${rotation}deg)`;
-
-    setTimeout(()=>{
-      if(outcome.includes("Death")){
-        document.body.classList.add("death");
-        document.getElementById("deathSound").play();
-        vibrate([300,100,300]);
-      } else {
-        document.getElementById("winSound").play();
-        vibrate([150]);
-        if(outcome.includes("Bil")||outcome.includes("100")) moneyRain();
-      }
-
-      const rarity = classify(outcome);
-      resultEl.textContent="Result: "+outcome;
-      resultEl.classList.add(rarity);
-      historyEl.innerHTML=`• ${outcome}<br>`+historyEl.innerHTML;
-      updateLeaderboard(outcome);
-    },5800);
-  }
-
-  updateLeaderboard("—");
+updateLeaderboard("—");
 </script>
 </body>
 </html>
